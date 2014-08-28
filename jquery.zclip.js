@@ -17,7 +17,8 @@
 
             var settings = jQuery.extend({
 
-                path: 'ZeroClipboard.swf',
+                // if path is null, then use the default swf url
+                path: null,
                 copy: null,
                 beforeCopy: null,
                 afterCopy: null,
@@ -33,7 +34,7 @@
 
                 if (o.is(':visible') && (typeof settings.copy == 'string' || jQuery.isFunction(settings.copy))) {
 
-                    ZeroClipboard.setMoviePath(settings.path);
+                    ZeroClipboard.setMoviePath(settings.path || ZeroClipboard.defaults.moviePath);
                     var clip = new ZeroClipboard.Client();
 
                     if (jQuery.isFunction(settings.copy)) {
@@ -152,9 +153,14 @@ var ZeroClipboard = {
     version: "1.0.7",
     clients: {},
     // registered upload clients on page, indexed by id
-    moviePath: 'ZeroClipboard.swf',
+    moviePath: null,
     // URL to movie
     nextId: 1,
+
+    defaults: {
+      moviePath: 'ZeroClipboard.swf'
+    },
+
     // ID of next movie
     jQuery: function (thingy) {
         // simple DOM lookup utility function
