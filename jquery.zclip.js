@@ -1,12 +1,11 @@
 /*
- * zClip :: jQuery ZeroClipboard v1.1.4
- * http://steamdev.com/zclip
+ * zClip :: jQuery ZeroClipboard v1.1.5
+ * Originally forked from: http://steamdev.com/zclip
  *
  * Copyright 2011, SteamDev
- * Released under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
  *
- * Date: Wed Jun 01, 2011
+ * Released under the MIT license.
+ * https://github.com/patricklodder/jquery-zclip/blob/master/LICENSE
  */
 
 (function (jQuery) {
@@ -15,18 +14,7 @@
 
         if (typeof params == "object" && !params.length) {
 
-            var settings = jQuery.extend({
-
-                // if path is null, then use the default swf url
-                path: null,
-                copy: null,
-                beforeCopy: null,
-                afterCopy: null,
-                clickAfter: true,
-                setHandCursor: true,
-                setCSSEffects: true
-
-            }, params);
+            var settings = jQuery.extend({}, ZeroClipboard.defaults, params);
 
             return this.each(function () {
 
@@ -34,7 +22,7 @@
 
                 if (o.is(':visible') && (typeof settings.copy == 'string' || jQuery.isFunction(settings.copy))) {
 
-                    ZeroClipboard.setMoviePath(settings.path || ZeroClipboard.defaults.moviePath);
+                    ZeroClipboard.setMoviePath(settings.path);
                     var clip = new ZeroClipboard.Client();
 
                     if (jQuery.isFunction(settings.copy)) {
@@ -153,15 +141,24 @@ var ZeroClipboard = {
     version: "1.0.7",
     clients: {},
     // registered upload clients on page, indexed by id
-    moviePath: null,
+    moviePath: 'ZeroClipboard.swf',
     // URL to movie
     nextId: 1,
+    // ID of next movie
 
     defaults: {
-      moviePath: 'ZeroClipboard.swf'
+        path: 'ZeroClipboard.swf',
+        clickAfter: true,
+        setHandCursor: true,
+        setCSSEffects: true,
+
+        copy: null,
+        // a string or function that returns string
+
+        beforeCopy: null,
+        afterCopy: null
     },
 
-    // ID of next movie
     jQuery: function (thingy) {
         // simple DOM lookup utility function
         if (typeof(thingy) == 'string') thingy = document.getElementById(thingy);
@@ -486,7 +483,7 @@ ZeroClipboard.Client.prototype = {
             for (var idx = 0, len = this.handlers[eventName].length; idx < len; idx++) {
                 var func = this.handlers[eventName][idx];
 
-                if (typeof(func) == 'function') {
+                if (jQuery.isFunction(func)) {
                     // actual function reference
                     func(this, args);
                 } else if ((typeof(func) == 'object') && (func.length == 2)) {
